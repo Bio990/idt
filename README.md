@@ -20,6 +20,9 @@ Aggiorna la variabile `NYTIMES_API_KEY` nel file `.env` con le tue chiavi API.
 # Clona il repository
 git clone https://github.com/Bio990/idt.git
 
+# Spostati nella cartella del progetto
+cd idt
+
 # Installa le dipendenze
 npm install
 
