@@ -1,10 +1,14 @@
 const express = require('express');
 const axios = require('axios');
+const NodeCache = require('node-cache');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const apiKey = process.env.NYTIMES_API_KEY;
+
+// i risultati restano memorizzati in cache per 5 minuti
+const cache = new NodeCache({ stdTTL: 300 });
 
 app.get('/nytimes/lists', async (req, res) => {
   if (!apiKey) {
@@ -23,6 +27,7 @@ app.get('/nytimes/lists', async (req, res) => {
         code: list.list_name_encoded
       }))
     );
+
   } catch (error) {
     res.status(500).json({ error: 'Errore durante la richiesta delle liste NY Times' });
   }
@@ -34,6 +39,14 @@ app.get('/nytimes/list/:listNameEncoded', async (req, res) => {
   }
 
   const listNameEncoded = req.params.listNameEncoded;
+
+  // utilizzo la cache per velocizzare le successive chiamate
+  const cacheKey = `nytimes:${listNameEncoded}`;
+  const cachedResponse = cache.get(cacheKey);
+
+  if (cachedResponse) {
+    return res.json(cachedResponse);
+  }
 
   try {
     const response = await axios.get(
@@ -51,6 +64,9 @@ app.get('/nytimes/list/:listNameEncoded', async (req, res) => {
         googleBooksPreviewLink: volume.data.items[0]?.volumeInfo?.previewLink
       }
     }));
+
+    // salvo il rsultato nella cache
+    cache.set(cacheKey, books);
 
     res.json(books);
   } catch (error) {
