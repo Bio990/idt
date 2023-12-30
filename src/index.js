@@ -10,11 +10,15 @@ const apiKey = process.env.NYTIMES_API_KEY;
 // i risultati restano memorizzati in cache per 5 minuti
 const cache = new NodeCache({ stdTTL: 300 });
 
-app.get('/nytimes/lists', async (req, res) => {
+app.use((req, res, next) => {
   if (!apiKey) {
     return res.status(500).json({ error: 'Prima di utilizzare questo servizio, è necessario ottenere una chiave API NY Times Books. Una volta ottenuta la chiave, aggiorna la variabile \'NYTIMES_API_KEY\' nel file .env' });
   }
 
+  next();
+})
+
+app.get('/nytimes/lists', async (req, res) => {
   try {
     const response = await axios.get(
       'https://api.nytimes.com/svc/books/v3/lists/names.json',
@@ -34,10 +38,6 @@ app.get('/nytimes/lists', async (req, res) => {
 });
 
 app.get('/nytimes/list/:listNameEncoded', async (req, res) => {
-  if (!apiKey) {
-    return res.status(500).json({ error: 'Prima di utilizzare questo servizio, è necessario ottenere una chiave API NY Times Books. Una volta ottenuta la chiave, aggiorna la variabile \'NYTIMES_API_KEY\' nel file .env' });
-  }
-
   const listNameEncoded = req.params.listNameEncoded;
 
   // utilizzo la cache per velocizzare le successive chiamate
