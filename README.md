@@ -42,10 +42,10 @@ npm start
 ```
 
 ## 2. Dettagli dei Libri in una Lista NY Times Books
-- **Endpoint:** `/nytimes/list/:listNameEncoded`
+- **Endpoint:** `/nytimes/list/:listCode`
 - **Metodo:** `GET`
 - **Descrizione:** `Restituisce i dettagli dei libri all'interno di una     lista NY Times Books specificata.`
-- **Parametri:** `listNameEncoded: Il nome della lista codificato.`
+- **Parametri:** `listCode: Il codice della lista.`
 - **Esempio di Utilizzo:**
 ```bash
     curl http://localhost:3000/nytimes/list/hardcover-fiction

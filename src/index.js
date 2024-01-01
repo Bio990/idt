@@ -37,11 +37,11 @@ app.get('/nytimes/lists', async (req, res) => {
   }
 });
 
-app.get('/nytimes/list/:listNameEncoded', async (req, res) => {
-  const listNameEncoded = req.params.listNameEncoded;
+app.get('/nytimes/list/:listCode', async (req, res) => {
+  const listCode = req.params.listCode;
 
   // utilizzo la cache per velocizzare le successive chiamate
-  const cacheKey = `nytimes:${listNameEncoded}`;
+  const cacheKey = `nytimes:${listCode}`;
   const cachedResponse = cache.get(cacheKey);
 
   if (cachedResponse) {
@@ -50,7 +50,7 @@ app.get('/nytimes/list/:listNameEncoded', async (req, res) => {
 
   try {
     const response = await axios.get(
-      `https://api.nytimes.com/svc/books/v3/lists/${listNameEncoded}.json`,
+      `https://api.nytimes.com/svc/books/v3/lists/${listCode}.json`,
       { params: { 'api-key': apiKey } }
     );
 
@@ -70,7 +70,7 @@ app.get('/nytimes/list/:listNameEncoded', async (req, res) => {
 
     res.json(books);
   } catch (error) {
-    res.status(500).json({ error: `Errore durante la richiesta dei libri per la lista ${listNameEncoded}` });
+    res.status(500).json({ error: `Errore durante la richiesta dei libri per la lista ${listCode}` });
   }
 });
 
